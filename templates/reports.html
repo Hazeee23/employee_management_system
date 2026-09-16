@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block title %}Reports{% endblock %}
+
+{% block content %}
+<section class="page-heading">
+    <div>
+        <p class="eyebrow">Insights</p>
+        <h1>Reports</h1>
+        <p class="subtitle">Understand your workforce at a glance.</p>
+    </div>
+    <a class="button button-secondary" href="{% url 'export_employees' %}">Download employee CSV</a>
+</section>
+
+<section class="stats-grid" aria-label="Report summary">
+    <div class="stat-card"><span class="stat-label">Employees</span><strong>{{ total_employees }}</strong><span class="stat-note">Current records</span></div>
+    <div class="stat-card"><span class="stat-label">Average salary</span><strong>&#8369;{{ average_salary|floatformat:0 }}</strong><span class="stat-note">Across the organization</span></div>
+    <div class="stat-card stat-card-accent"><span class="stat-label">Salary range</span><strong>&#8369;{{ salary_min|floatformat:0 }}</strong><span class="stat-note">To &#8369;{{ salary_max|floatformat:0 }}</span></div>
+</section>
+
+<div class="analytics-grid">
+    <section class="pulse-panel" aria-labelledby="report-hiring-heading">
+        <div class="pulse-heading"><h2 id="report-hiring-heading">Hiring trend</h2><p>Employees by year</p></div>
+        <div class="analytics-list">
+            {% for year in hire_summary %}<div class="analytics-row"><span>{{ year.date_hired__year }}</span><div class="analytics-bar"><span style="width: {{ year.total }}0%;"></span></div><strong>{{ year.total }}</strong></div>{% empty %}<p class="pulse-note">No hiring data available.</p>{% endfor %}
+        </div>
+    </section>
+    <section class="pulse-panel" aria-labelledby="report-department-heading">
+        <div class="pulse-heading"><h2 id="report-department-heading">Department totals</h2><p>Headcount and average salary</p></div>
+        <div class="report-table">
+            {% for department in department_summary %}<div class="report-row"><div><strong>{{ department.department }}</strong><small>{{ department.total }} employee{{ department.total|pluralize }}</small></div><span>&#8369;{{ department.average_salary|floatformat:0 }}</span></div>{% empty %}<p class="pulse-note">No department data available.</p>{% endfor %}
+        </div>
+    </section>
+</div>
+{% endblock %}

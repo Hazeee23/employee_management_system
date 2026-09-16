@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block title %}Departments{% endblock %}
+
+{% block content %}
+<section class="page-heading">
+    <div>
+        <p class="eyebrow">Organization</p>
+        <h1>Departments</h1>
+        <p class="subtitle">See how your team is distributed across the organization.</p>
+    </div>
+    <a class="button button-secondary" href="{% url 'employee_list' %}">View directory</a>
+</section>
+
+<section class="department-cards" aria-label="Department summary">
+    {% for department in department_summary %}
+    <article class="department-card">
+        <div class="department-card-heading"><span class="department-icon" aria-hidden="true">{{ department.department|first|upper }}</span><div><h2>{{ department.department }}</h2><p>{{ department.total }} employee{{ department.total|pluralize }}</p></div></div>
+        <div class="department-card-details"><div><span>Average salary</span><strong>&#8369;{{ department.average_salary|floatformat:0 }}</strong></div><div><span>Latest hire</span><strong>{{ department.latest_hire|date:"M d, Y" }}</strong></div></div>
+        <a class="text-link" href="{% url 'employee_list' %}?department={{ department.department|urlencode }}">View employees →</a>
+    </article>
+    {% empty %}
+    <section class="pulse-panel empty-state"><strong>No departments yet</strong><span>Add an employee to create the first department.</span></section>
+    {% endfor %}
+</section>
+{% endblock %}

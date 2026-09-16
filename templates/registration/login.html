@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block title %}Sign in{% endblock %}
+
+{% block content %}
+<section class="form-page login-page">
+    <div class="form-heading"><p class="eyebrow">Northstar workspace</p><h1>Sign in</h1><p class="subtitle">Use your team account to access the employee directory.</p></div>
+    <form class="employee-form" method="POST">
+        {% csrf_token %}
+        {% if form.non_field_errors %}<div class="form-errors">Your username or password was not recognized.</div>{% endif %}
+        <div class="form-grid form-grid-single">
+            <div class="field"><label for="id_username">Username</label><input class="form-control" id="id_username" name="username" type="text" autocomplete="username" required autofocus></div>
+            <div class="field"><label for="id_password">Password</label><input class="form-control" id="id_password" name="password" type="password" autocomplete="current-password" required></div>
+        </div>
+        <div class="form-actions"><button class="button button-primary" type="submit">Sign in</button></div>
+    </form>
+</section>
+{% endblock %}

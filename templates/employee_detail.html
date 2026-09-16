@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ employee.first_name }} {{ employee.last_name }}{% endblock %}
+
+{% block content %}
+<section class="profile-page">
+    <a class="back-link" href="{% url 'employee_list' %}">&larr; Back to directory</a>
+    <div class="profile-header">
+        {% if employee.profile_photo %}<img class="profile-avatar profile-photo" src="{{ employee.profile_photo.url }}" alt="Profile photo of {{ employee.first_name }} {{ employee.last_name }}">{% else %}<span class="profile-avatar">{{ employee.first_name|first }}{{ employee.last_name|first }}</span>{% endif %}
+        <div>
+            <p class="eyebrow">Employee profile</p>
+            <h1>{{ employee.first_name }} {{ employee.last_name }}</h1>
+            <p class="subtitle">{{ employee.position }} · {{ employee.department }}</p>
+        </div>
+    </div>
+
+    <section class="profile-panel">
+        <div class="profile-grid">
+            <div class="profile-item"><label>Email</label><p><a class="muted-link" href="mailto:{{ employee.email }}">{{ employee.email }}</a></p></div>
+            <div class="profile-item"><label>Phone</label><p>{{ employee.phone }}</p></div>
+            <div class="profile-item"><label>Department</label><p>{{ employee.department }}</p></div>
+            <div class="profile-item"><label>Position</label><p>{{ employee.position }}</p></div>
+            <div class="profile-item"><label>Date hired</label><p>{{ employee.date_hired|date:"F j, Y" }}</p></div>
+            <div class="profile-item"><label>Years of service</label><p>{{ employee.years_of_service }} year{{ employee.years_of_service|pluralize }}</p></div>
+            <div class="profile-item"><label>Annual salary</label><p>&#8369;{{ employee.salary|floatformat:2 }}</p></div>
+            <div class="profile-item"><label>Emergency contact</label><p>{{ employee.emergency_contact|default:"Not provided" }}</p></div>
+            <div class="profile-item"><label>Emergency phone</label><p>{{ employee.emergency_phone|default:"Not provided" }}</p></div>
+        </div>
+        {% if employee.notes %}<div class="profile-notes"><label>Notes</label><p>{{ employee.notes|linebreaksbr }}</p></div>{% endif %}
+        <div class="profile-actions">
+            <a class="button button-primary" href="{% url 'edit_employee' employee.id %}">Edit employee</a>
+            <a class="button button-secondary" href="{% url 'employee_list' %}">Back to directory</a>
+        </div>
+    </section>
+</section>
+{% endblock %}

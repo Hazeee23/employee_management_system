@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+
+{% block title %}People overview{% endblock %}
+
+{% block content %}
+<section class="page-heading">
+    <div>
+        <p class="eyebrow">People operations</p>
+        <h1>Employee directory</h1>
+        <p class="subtitle">Search, filter, and manage every employee record.</p>
+    </div>
+    <div class="heading-actions">
+        <a class="button button-secondary" href="{% url 'export_employees' %}?search={{ search|urlencode }}&department={{ department|urlencode }}&position={{ position|urlencode }}">Download CSV</a>
+        <a class="button button-primary" href="{% url 'add_employee' %}">+ Add employee</a>
+    </div>
+</section>
+
+<section class="directory-panel">
+    <div class="panel-toolbar">
+        <div>
+            <h2>All employees</h2>
+            <p>Browse, update, or remove team records.</p>
+        </div>
+        <form class="directory-filters" method="GET">
+            <label class="sr-only" for="employee-search">Search employees</label>
+            <input id="employee-search" type="search" name="search" placeholder="Search by name, role, or team" value="{{ search }}">
+            <label class="sr-only" for="department-filter">Department</label>
+            <select id="department-filter" name="department">
+                <option value="">All departments</option>
+                {% for option in departments %}<option value="{{ option }}"{% if option == department %} selected{% endif %}>{{ option }}</option>{% endfor %}
+            </select>
+            <label class="sr-only" for="position-filter">Position</label>
+            <select id="position-filter" name="position">
+                <option value="">All positions</option>
+                {% for option in positions %}<option value="{{ option }}"{% if option == position %} selected{% endif %}>{{ option }}</option>{% endfor %}
+            </select>
+            <label class="sr-only" for="sort-employees">Sort employees</label>
+            <select id="sort-employees" name="sort">
+                <option value="name"{% if sort == 'name' %} selected{% endif %}>Name A-Z</option>
+                <option value="name_desc"{% if sort == 'name_desc' %} selected{% endif %}>Name Z-A</option>
+                <option value="newest"{% if sort == 'newest' %} selected{% endif %}>Newest hires</option>
+                <option value="oldest"{% if sort == 'oldest' %} selected{% endif %}>Oldest hires</option>
+                <option value="salary_high"{% if sort == 'salary_high' %} selected{% endif %}>Highest salary</option>
+                <option value="salary_low"{% if sort == 'salary_low' %} selected{% endif %}>Lowest salary</option>
+            </select>
+            <button class="button button-dark" type="submit">Apply</button>
+            {% if search or department or position or sort != 'name' %}<a class="button button-secondary" href="{% url 'employee_list' %}">Clear</a>{% endif %}
+        </form>
+    </div>
+
+    {% if request.user.is_staff %}<form method="POST" action="{% url 'bulk_delete_employees' %}" onsubmit="return confirm('Delete the selected employee records?');">{% csrf_token %}<div class="bulk-toolbar"><label><input class="select-box" id="select-all" type="checkbox"> Select all on this page</label><button class="button button-secondary" type="submit">Delete selected</button></div>{% endif %}
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>{% if request.user.is_staff %}<th><span class="sr-only">Select</span></th>{% endif %}<th>Employee</th><th>Contact</th><th>Department</th><th>Position</th><th>Hired</th><th class="align-right">Actions</th></tr>
+            </thead>
+            <tbody>
+                {% for employee in employees %}
+                <tr>
+                    {% if request.user.is_staff %}<td><input class="select-box employee-checkbox" type="checkbox" name="employee_ids" value="{{ employee.id }}" aria-label="Select {{ employee.first_name }} {{ employee.last_name }}"></td>{% endif %}<td><div class="employee-cell"><span class="avatar">{{ employee.first_name|first }}{{ employee.last_name|first }}</span><div><a href="{% url 'employee_detail' employee.id %}"><strong>{{ employee.first_name }} {{ employee.last_name }}</strong></a><small>ID #{{ employee.id }}</small></div></div></td>
+                    <td><a class="muted-link" href="mailto:{{ employee.email }}">{{ employee.email }}</a><small>{{ employee.phone }}</small></td>
+                    <td><span class="department-tag">{{ employee.department }}</span></td>
+                    <td>{{ employee.position }}</td>
+                    <td>{{ employee.date_hired|date:"M d, Y" }}</td>
+                    <td class="align-right actions">{% if request.user.is_staff %}<a href="{% url 'edit_employee' employee.id %}">Edit</a><form class="inline-form" method="POST" action="{% url 'delete_employee' employee.id %}" onsubmit="return confirm('Delete this employee record?');">{% csrf_token %}<button class="delete-button" type="submit">Delete</button></form>{% else %}<a href="{% url 'employee_detail' employee.id %}">View</a>{% endif %}</td>
+                </tr>
+                {% empty %}
+                <tr><td class="empty-state" colspan="7"><strong>No employees found</strong><span>Try a different search or add a new team member.</span></td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% if request.user.is_staff %}</form><script>document.getElementById('select-all').addEventListener('change', function () { document.querySelectorAll('.employee-checkbox').forEach(function (checkbox) { checkbox.checked = this.checked; }, this); });</script>{% endif %}
+    {% if page_obj.paginator.num_pages > 1 %}
+    <nav class="pagination" aria-label="Employee pages">
+        {% if page_obj.has_previous %}<a href="?search={{ search|urlencode }}&department={{ department|urlencode }}&position={{ position|urlencode }}&sort={{ sort }}&page={{ page_obj.previous_page_number }}">Previous</a>{% endif %}
+        <span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+        {% if page_obj.has_next %}<a href="?search={{ search|urlencode }}&department={{ department|urlencode }}&position={{ position|urlencode }}&sort={{ sort }}&page={{ page_obj.next_page_number }}">Next</a>{% endif %}
+    </nav>
+    {% endif %}
+</section>
+{% endblock %}

@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block title %}Add employee{% endblock %}
+
+{% block content %}
+<section class="form-page">
+    <a class="back-link" href="{% url 'employee_list' %}">&larr; Back to directory</a>
+    <div class="form-heading"><p class="eyebrow">People operations</p><h1>Add employee</h1><p class="subtitle">Create a profile for a new member of your team.</p></div>
+    <form class="employee-form" method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        {% if form.non_field_errors %}<div class="form-errors">{{ form.non_field_errors }}</div>{% endif %}
+        <div class="form-grid">
+            {% for field in form %}
+            <div class="field{% if field.errors %} field-error{% endif %}"><label for="{{ field.id_for_label }}">{{ field.label }}</label>{{ field }}{% if field.errors %}<span class="error-text">{{ field.errors|striptags }}</span>{% endif %}</div>
+            {% endfor %}
+        </div>
+        <div class="form-actions"><a class="button button-secondary" href="{% url 'employee_list' %}">Cancel</a><button class="button button-primary" type="submit">Save employee</button></div>
+    </form>
+</section>
+{% endblock %}
