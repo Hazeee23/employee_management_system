@@ -4,6 +4,28 @@ Northstar is a Django-based employee management system for organizing employee r
 
 The interface is designed for simple daily use by HR teams and administrators, with a dashboard-first layout, clear navigation, search and filters, and staff-only management actions.
 
+## Screenshots
+
+### Sign in
+
+![Northstar sign-in page](screenshots/sign-in.png)
+
+### Dashboard
+
+![Northstar dashboard](screenshots/dashboard.png)
+
+### Employee directory
+
+![Northstar employee directory](screenshots/employee-directory.png)
+
+### Departments
+
+![Northstar departments](screenshots/departments.png)
+
+### Reports
+
+![Northstar reports](screenshots/reports.png)
+
 ## Features
 
 - Dashboard with employee, department, salary, and hiring summaries
